@@ -11,7 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var storage = [];
+var storage = {messages:[]};
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -32,18 +32,21 @@ exports.requestHandler = function(request, response) {
   // console.log("Serving request type " + request.method + " for url " + request.url || request.uri);
 
   var urlChain = request.url.substring(1).split('/');
+  var room = urlChain[1];
+  console.log(urlChain);
   var statusCode;
 
   // Determine 
   if (request.method === "GET") {
-   if (urlChain[1] === 'messages'){
+   if (storage[room]){
        statusCode = 200;
    }
   } else if (request.method === "POST") {
       var dataString = '';
       request.on('data', function(data) {
         dataString += data;
-        storage.push(JSON.parse(dataString));
+        storage[room] = storage[room] || [];
+        storage[room].push(JSON.parse(dataString));
       });
 
       statusCode = 201;
@@ -69,16 +72,14 @@ exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
-console.log('storage ', storage);
   var responseBody =  {
-    //headers: headers,
     method: request.method, 
     url: request.url,
     body: "[this should be the body]",
-    results: storage //[{username: 'Jono', message: 'Do my bidding!'}]
+    results: storage[room] //[{username: 'Jono', message: 'Do my bidding!'}]
   };
 
-  response.write(JSON.stringify(responseBody));
+  response.end(JSON.stringify(responseBody));
 
 
   // Make sure to always call response.end() - Node may not send
@@ -88,7 +89,7 @@ console.log('storage ', storage);
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end();
+  // response.end();
   // return [response, response, response];
 };
 
