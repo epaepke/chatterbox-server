@@ -26,10 +26,19 @@ exports.requestHandler = function(request, response) {
   //
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
-  console.log(request.url.indexOf('?'));// && request.url.include('?'));
-  var urlChain = request.url.substring(1).split('/');
+
+  var urlChain;
+  if (request.url.indexOf('?') > - 1) {
+    var seperatedUrl = request.url.split('?');
+    var query = seperatedUrl[1].split('=');
+    // storage.order(query);
+    urlChain = seperatedUrl[0].substring(1).split('/');
+  } else {
+    urlChain = request.url.substring(1).split('/');
+  }
   var room = urlChain[1];
-  var statusCode;
+  var statusCode= 404;
+
 
   if (request.method === "GET") {
     if (urlChain[0] === 'classes') {
@@ -39,6 +48,7 @@ exports.requestHandler = function(request, response) {
     request.on('data', function(data) {
       data = JSON.parse(data);
       data.objectId = Date.now();
+      data.createdAt = data.objectId;
       storage.push(data);
     });
     statusCode = 201;
@@ -48,21 +58,12 @@ exports.requestHandler = function(request, response) {
     statusCode = 200;
   } else if (request.method === "OPTIONS") {
     statusCode = 200;
-  } 
-  statusCode = statusCode || 404;
-  // The outgoing status.
+  }
 
-  // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
   headers['Content-Type'] = "application/JSON";
 
-  // .writeHead() writes to the request line and headers of the response,
-  // which includes the status and all headers.
   response.writeHead(statusCode, headers);
   var responseBody =  {
     method: request.method, 
@@ -73,27 +74,27 @@ exports.requestHandler = function(request, response) {
 
   response.end(JSON.stringify(responseBody));
 
-
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
-  // response.end();
-  // return [response, response, response];
 };
 
-// These headers will allow Cross-Origin Resource Sharing (CORS).
-// This code allows this server to talk to websites that
-// are on different domains, for instance, your chat client.
-//
-// Your chat client is running from a url like file://your/chat/client/index.html,
-// which is considered a different domain.
-//
-// Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
+// storage.order = function (query) {
+//   if (!this.length || !query) {
+//     return;
+//   }
+
+//   var sign = 1;
+//   if (query[0] === 'order') {
+//     if (query[1].substring(0,1) === '-') {
+//       query[1] = query[1].substring(1);
+//       sign = -1;
+//     }
+//     if (query[1] in this[0]) {
+//       this.sort(function(a,b) {
+//         return sign * (a[query[1]] - b[query[1]]) > 0;
+//       });
+//     }
+//   }
+// };
+
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",

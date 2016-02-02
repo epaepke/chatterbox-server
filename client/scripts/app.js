@@ -59,7 +59,7 @@ var app = {
       url: app.server,
       type: 'GET',
       contentType: 'application/json',
-      data: { order: '-ojbectId'},
+      data: { order: '-createdAt'},
       success: function(data) {
         data = JSON.parse(data);
 
