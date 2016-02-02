@@ -54,7 +54,7 @@ exports.requestHandler = function(request, response) {
   } else if (request.method === "OPTIONS") {
 
   } 
-  statusCode = statusCode || 200;
+  statusCode = statusCode || 404;
   // The outgoing status.
 
   // See the note below about CORS headers.
