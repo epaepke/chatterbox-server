@@ -44,7 +44,6 @@ var app = {
       data: JSON.stringify(data),
       contentType: 'application/json',
       success: function (data) {
-        console.log('send success ', data);
 
       // Trigger a fetch to update the messages, pass true to animate
         app.fetch(false);
@@ -62,8 +61,6 @@ var app = {
       contentType: 'application/json',
       // data: { order: '-createdAt'},
       success: function(data) {
-        console.log('fetch success ', data);
-        // console.log('success ',typeof data);
         data = JSON.parse(data);
 
         // Don't bother if we have nothing to work with
@@ -74,10 +71,8 @@ var app = {
         }
 
         // Get the last message
-        var mostRecentMessage = data.results[data.results.length-1];
+        var mostRecentMessage = data.results[data.results.length - 1];
         var displayedRoom = $('.chat span').first().data('roomname');
-        console.log('mostRecentMessage ', mostRecentMessage);
-        console.log('displayedRoom ', displayedRoom);
 
         app.stopSpinner();
         // Only bother updating the DOM if we have a new message

@@ -11,14 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var storage = 
-  [ //{message:"", username:"", roomname:"lobby", objectId: "abcd"}
-    // {message:"hi", username:"erick", roomname:"messages", objectId: "abcd"}, 
-    // {message:"oh hey there", username:"elliot", roomname: "messages", objectId: "abcd1"},
-    // {message:"hi lobby!", username:"gret", roomname:"lobby", objectId: "abcd2"}, 
-    // {message:"lobby is overrated", username:"jimbo bob", roomname:"lobby", objectId: "abcd3"},
-    // {message:"oh nulonw", username:"kronenburg elliot", roomname: "taco truck", objectId: "987126"}
-  ];
+var storage = [];
 var objectIdCount = 0;
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -29,7 +22,6 @@ exports.requestHandler = function(request, response) {
   //
   // Documentation for both request and response can be found in the HTTP section at
   // http://nodejs.org/documentation/api/
-   // debugger;
   // Do some basic logging.
   //
   // Adding more logging to your server can be an easy way to get passive
@@ -37,10 +29,8 @@ exports.requestHandler = function(request, response) {
 
   var urlChain = request.url.substring(1).split('/');
   var room = urlChain[1];
-  // storage[room] = storage[room] || [];
   var statusCode;
 
-  // Determine 
   if (request.method === "GET") {
     if (urlChain[0] === 'classes') {
       statusCode = 200;
@@ -53,9 +43,9 @@ exports.requestHandler = function(request, response) {
     });
     statusCode = 201;
   } else if (request.method === "PUT") {
-
+    statusCode = 200;
   } else if (request.method === "DELETE") {
-
+    statusCode = 200;
   } else if (request.method === "OPTIONS") {
     statusCode = 200;
   } 
