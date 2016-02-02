@@ -12,12 +12,12 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var storage = 
-  [
-    {message:"hi", username:"erick", roomname:"messages", objectId: "abcd"}, 
-    {message:"oh hey there", username:"elliot", roomname: "messages", objectId: "abcd1"},
-    {message:"hi lobby!", username:"gret", roomname:"lobby", objectId: "abcd2"}, 
-    {message:"lobby is overrated", username:"jimbo bob", roomname:"lobby", objectId: "abcd3"},
-    {message:"oh nulonw", username:"kronenburg elliot", roomname: "taco truck", objectId: "987126"}
+  [ //{message:"", username:"", roomname:"lobby", objectId: "abcd"}
+    // {message:"hi", username:"erick", roomname:"messages", objectId: "abcd"}, 
+    // {message:"oh hey there", username:"elliot", roomname: "messages", objectId: "abcd1"},
+    // {message:"hi lobby!", username:"gret", roomname:"lobby", objectId: "abcd2"}, 
+    // {message:"lobby is overrated", username:"jimbo bob", roomname:"lobby", objectId: "abcd3"},
+    // {message:"oh nulonw", username:"kronenburg elliot", roomname: "taco truck", objectId: "987126"}
   ];
 var objectIdCount = 0;
 exports.requestHandler = function(request, response) {
@@ -36,22 +36,20 @@ exports.requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
 
   var urlChain = request.url.substring(1).split('/');
-  console.log('urlChain ', urlChain);
   var room = urlChain[1];
   // storage[room] = storage[room] || [];
-
   var statusCode;
 
   // Determine 
   if (request.method === "GET") {
-    if (room) {
+    if (urlChain[0] === 'classes') {
       statusCode = 200;
     }
   } else if (request.method === "POST") {
     request.on('data', function(data) {
       data = JSON.parse(data);
       data.objectId = objectIdCount++;
-      storage[room].push(data);
+      storage.push(data);
     });
     statusCode = 201;
   } else if (request.method === "PUT") {
@@ -80,7 +78,7 @@ exports.requestHandler = function(request, response) {
     method: request.method, 
     url: request.url,
     body: "[this should be the body]",
-    results: storage[room]
+    results: storage
   };
 
   response.end(JSON.stringify(responseBody));

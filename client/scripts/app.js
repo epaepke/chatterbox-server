@@ -28,9 +28,8 @@ var app = {
     // Fetch previous messages
     app.startSpinner();
     app.fetch(false);
-
     // Poll for new messages
-    // setInterval(app.fetch, 3000);
+    setInterval(app.fetch, 3000);
   },
 
   send: function(data) {
@@ -58,7 +57,7 @@ var app = {
 
   fetch: function(animate) {
     $.ajax({
-      url: app.server + app.roomname,
+      url: app.server,
       type: 'GET',
       contentType: 'application/json',
       // data: { order: '-createdAt'},
@@ -68,7 +67,11 @@ var app = {
         data = JSON.parse(data);
 
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        if (!data.results || !data.results.length) { 
+          app.populateRooms();
+          app.stopSpinner();
+          return;
+        }
 
         // Get the last message
         var mostRecentMessage = data.results[data.results.length-1];
@@ -122,10 +125,10 @@ var app = {
   },
 
   populateRooms: function(results) {
-    app.$roomSelect.html('<option value="__newRoom">New room...</option></select>');
+    app.$roomSelect.html('<option value="__newRoom">New room...</option><option>lobby</option></select>');
 
     if (results) {
-      var rooms = {};
+      var rooms = {lobby:true};
       results.forEach(function(data) {
         var roomname = data.roomname;
         if (roomname && !rooms[roomname]) {
@@ -207,7 +210,13 @@ var app = {
         app.$roomSelect.val(roomname);
 
         // Fetch messages again
-        app.fetch();
+        var message = {
+          message: 'Welcome to ' + roomname +'!',
+          username: roomname + ' moderator',
+          roomname: roomname
+        };
+
+        app.send(message);
       }
     }
     else {
