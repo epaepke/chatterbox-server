@@ -26,7 +26,7 @@ exports.requestHandler = function(request, response) {
   //
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
-
+  console.log(request.url.indexOf('?'));// && request.url.include('?'));
   var urlChain = request.url.substring(1).split('/');
   var room = urlChain[1];
   var statusCode;
@@ -38,7 +38,7 @@ exports.requestHandler = function(request, response) {
   } else if (request.method === "POST") {
     request.on('data', function(data) {
       data = JSON.parse(data);
-      data.objectId = objectIdCount++;
+      data.objectId = Date.now();
       storage.push(data);
     });
     statusCode = 201;
