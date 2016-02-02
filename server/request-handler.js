@@ -11,8 +11,15 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var storage = {messages:[]};
-
+var storage = 
+  [
+    {message:"hi", username:"erick", roomname:"messages", objectId: "abcd"}, 
+    {message:"oh hey there", username:"elliot", roomname: "messages", objectId: "abcd1"},
+    {message:"hi lobby!", username:"gret", roomname:"lobby", objectId: "abcd2"}, 
+    {message:"lobby is overrated", username:"jimbo bob", roomname:"lobby", objectId: "abcd3"},
+    {message:"oh nulonw", username:"kronenburg elliot", roomname: "taco truck", objectId: "987126"}
+  ];
+var objectIdCount = 0;
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -29,30 +36,30 @@ exports.requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
 
   var urlChain = request.url.substring(1).split('/');
+  console.log('urlChain ', urlChain);
   var room = urlChain[1];
-  storage[room] = storage[room] || [];
+  // storage[room] = storage[room] || [];
 
   var statusCode;
 
   // Determine 
   if (request.method === "GET") {
-   if (room) {
-    statusCode = 200;
-   }
+    if (room) {
+      statusCode = 200;
+    }
   } else if (request.method === "POST") {
-      var dataString = '';
-      request.on('data', function(data) {
-        dataString += data;
-        storage[room].push(JSON.parse(dataString));
-      });
-
-      statusCode = 201;
+    request.on('data', function(data) {
+      data = JSON.parse(data);
+      data.objectId = objectIdCount++;
+      storage[room].push(data);
+    });
+    statusCode = 201;
   } else if (request.method === "PUT") {
 
   } else if (request.method === "DELETE") {
 
   } else if (request.method === "OPTIONS") {
-
+    statusCode = 200;
   } 
   statusCode = statusCode || 404;
   // The outgoing status.
