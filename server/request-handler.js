@@ -27,17 +27,22 @@ exports.requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log("Serving request type " + request.method + " for url " + request.url);
+  console.log("Serving request type " + request.method + " for url " + request.url || request.uri);
 
-  var urlChain = request.url.split('/');
+  var urlChain = request.url.substring(1).split('/');
   var statusCode;
 
   // Determine 
   if (request.method === "GET") {
-   // if (urlChain[0] === 'classes' && urlChain[1] === 'messages'){
-    //    statusCode = 200;
-   // }
+   if (urlChain[1] === 'messages'){
+       statusCode = 200;
+   }
   } else if (request.method === "POST") {
+    // console.log('request ', request);
+    // if (urlChain[1] === 'messages'){
+        console.log(JSON.stringify(request._postData));
+        statusCode = 201;
+    // }
     // debugger;
   } else if (request.method === "PUT") {
 
@@ -99,3 +104,9 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+
+var storage = {
+  room: 'hi'
+};
+
