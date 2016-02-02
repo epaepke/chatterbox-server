@@ -11,6 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var storage = [];
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -27,7 +28,8 @@ exports.requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log("Serving request type " + request.method + " for url " + request.url || request.uri);
+  // console.log(request);
+  // console.log("Serving request type " + request.method + " for url " + request.url || request.uri);
 
   var urlChain = request.url.substring(1).split('/');
   var statusCode;
@@ -38,12 +40,13 @@ exports.requestHandler = function(request, response) {
        statusCode = 200;
    }
   } else if (request.method === "POST") {
-    // console.log('request ', request);
-    // if (urlChain[1] === 'messages'){
-        console.log(JSON.stringify(request._postData));
-        statusCode = 201;
-    // }
-    // debugger;
+      var dataString = '';
+      request.on('data', function(data) {
+        dataString += data;
+        storage.push(JSON.parse(dataString));
+      });
+
+      statusCode = 201;
   } else if (request.method === "PUT") {
 
   } else if (request.method === "DELETE") {
@@ -66,13 +69,13 @@ exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
-
+console.log('storage ', storage);
   var responseBody =  {
     //headers: headers,
     method: request.method, 
     url: request.url,
     body: "[this should be the body]",
-    results: []
+    results: storage //[{username: 'Jono', message: 'Do my bidding!'}]
   };
 
   response.write(JSON.stringify(responseBody));
@@ -106,7 +109,4 @@ var defaultCorsHeaders = {
 };
 
 
-var storage = {
-  room: 'hi'
-};
 
