@@ -39,16 +39,10 @@ exports.requestHandler = function(request, response) {
    if (room) {
     statusCode = 200;
    }
-   // if (room in storage){
-   //     statusCode = 200;
-   // } else {
-   //  console.log('room ', room)
-   //  }
   } else if (request.method === "POST") {
       var dataString = '';
       request.on('data', function(data) {
         dataString += data;
-        // storage[room] = storage[room] || [];
         storage[room].push(JSON.parse(dataString));
       });
 

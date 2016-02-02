@@ -45,7 +45,7 @@ var app = {
       data: JSON.stringify(data),
       contentType: 'application/json',
       success: function (data) {
-        // Trigger a fetch to update the messages, pass true to animate
+      // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
       error: function (data) {
