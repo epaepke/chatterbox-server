@@ -2,8 +2,9 @@ var request = require('request');
 var expect = require('../../node_modules/chai/chai').expect;
 
 describe('server', function() {
-  it('should respond to GET requests for /log with a 200 status code', function(done) {
+  it('FIRST should respond to GET requests for /log with a 200 status code', function(done) {
     request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      console.log(response.statusCode);
       expect(response.statusCode).to.equal(200);
       done();
     });
