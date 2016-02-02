@@ -73,7 +73,7 @@ exports.requestHandler = function(request, response) {
     method: request.method, 
     url: request.url,
     body: "[this should be the body]",
-    results: storage[room] //[{username: 'Jono', message: 'Do my bidding!'}]
+    results: storage[room]
   };
 
   response.end(JSON.stringify(responseBody));
