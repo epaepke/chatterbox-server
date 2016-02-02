@@ -27,25 +27,28 @@ exports.requestHandler = function(request, response) {
   //
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
-  // console.logs in your code.
-  // console.log(request);
-  // console.log("Serving request type " + request.method + " for url " + request.url || request.uri);
 
   var urlChain = request.url.substring(1).split('/');
   var room = urlChain[1];
-  console.log(urlChain);
+  storage[room] = storage[room] || [];
+
   var statusCode;
 
   // Determine 
   if (request.method === "GET") {
-   if (storage[room]){
-       statusCode = 200;
+   if (room) {
+    statusCode = 200;
    }
+   // if (room in storage){
+   //     statusCode = 200;
+   // } else {
+   //  console.log('room ', room)
+   //  }
   } else if (request.method === "POST") {
       var dataString = '';
       request.on('data', function(data) {
         dataString += data;
-        storage[room] = storage[room] || [];
+        // storage[room] = storage[room] || [];
         storage[room].push(JSON.parse(dataString));
       });
 
