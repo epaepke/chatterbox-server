@@ -54,7 +54,6 @@ describe('server', function() {
         username: 'Jono',
         message: 'Do my bidding!'}
     };
-    
 
     request(requestParams, function(error, response, body) {
       // Now if we request the log, that message we posted should be there:

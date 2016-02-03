@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:3000/classes/',
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -28,6 +28,7 @@ var app = {
     // Fetch previous messages
     app.startSpinner();
     app.fetch(false);
+
     // Poll for new messages
     setInterval(app.fetch, 3000);
   },
@@ -39,14 +40,13 @@ var app = {
 
     // POST the message to the server
     $.ajax({
-      url: app.server + data.roomname,
+      url: app.server,
       type: 'POST',
       data: JSON.stringify(data),
       contentType: 'application/json',
       success: function (data) {
-
-      // Trigger a fetch to update the messages, pass true to animate
-        app.fetch(false);
+        // Trigger a fetch to update the messages, pass true to animate
+        app.fetch();
       },
       error: function (data) {
         console.error('chatterbox: Failed to send message');
@@ -61,19 +61,12 @@ var app = {
       contentType: 'application/json',
       data: { order: '-createdAt'},
       success: function(data) {
-        data = JSON.parse(data);
-
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { 
-          app.populateRooms();
-          app.stopSpinner();
-          return;
-        }
+        if (!data.results || !data.results.length) { return; }
 
         // Get the last message
-        var mostRecentMessage = data.results[data.results.length - 1];
+        var mostRecentMessage = data.results[data.results.length-1];
         var displayedRoom = $('.chat span').first().data('roomname');
-
         app.stopSpinner();
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
@@ -120,10 +113,10 @@ var app = {
   },
 
   populateRooms: function(results) {
-    app.$roomSelect.html('<option value="__newRoom">New room...</option><option>lobby</option></select>');
+    app.$roomSelect.html('<option value="__newRoom">New room...</option><option value="" selected>Lobby</option></select>');
 
     if (results) {
-      var rooms = {lobby:true};
+      var rooms = {};
       results.forEach(function(data) {
         var roomname = data.roomname;
         if (roomname && !rooms[roomname]) {
@@ -167,7 +160,7 @@ var app = {
         $username.addClass('friend');
 
       var $message = $('<br><span/>');
-      $message.text(data.message).appendTo($chat);
+      $message.text(data.text).appendTo($chat);
 
       // Add the message to the UI
       app.$chats.append($chat);
@@ -205,13 +198,7 @@ var app = {
         app.$roomSelect.val(roomname);
 
         // Fetch messages again
-        var message = {
-          message: 'Welcome to ' + roomname +'!',
-          username: roomname + ' moderator',
-          roomname: roomname
-        };
-
-        app.send(message);
+        app.fetch();
       }
     }
     else {
@@ -226,8 +213,8 @@ var app = {
 
   handleSubmit: function(evt) {
     var message = {
-      message: app.$message.val(),
       username: app.username,
+      text: app.$message.val(),
       roomname: app.roomname || 'lobby'
     };
 
